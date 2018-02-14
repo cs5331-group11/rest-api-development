@@ -96,10 +96,10 @@ Please fill out this section with details relevant to your team.
 
 ### Team Members
 
-1. Member 1 Name
-2. Member 2 Name
-3. Member 3 Name
-4. Member 4 Name
+1. Caroline Astolfi
+2. Jaliya Chathuranga Waidyathilake
+3. Jayson Lomtong Cena
+4. Rafael Peres Da Silva
 
 ### Short Answer Questions
 
