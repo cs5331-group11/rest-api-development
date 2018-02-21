@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `WebSecu_DB` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `WebSecu_DB`;
 -- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --
 -- Host: localhost    Database: WebSecu_DB
@@ -28,7 +30,10 @@ CREATE TABLE `diary` (
   `public` tinyint(1) NOT NULL,
   `text` text,
   `publish_date` datetime NOT NULL,
-  `token` text
+  `token` text,
+  `author` varchar(45) DEFAULT NULL,
+  `diary_id` int(11) NOT NULL AUTO_INCREMENT,
+  UNIQUE KEY `diary_id_UNIQUE` (`diary_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -50,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-19 17:41:13
+-- Dump completed on 2018-02-21 10:54:14
