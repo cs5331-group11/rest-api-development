@@ -8,6 +8,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q runit
 
 RUN apt-get update
 RUN apt-get install -y python-pip
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 #RUN echo "ServerName localhost  " >> /etc/apache2/apache2.conf
 RUN echo "$user     hard    nproc       100" >> /etc/security/limits.conf

@@ -1,0 +1,6 @@
+pip
+flask
+flask-cors
+configparser
+Flask-SQLAlchemy
+PyJWT
