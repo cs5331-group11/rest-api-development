@@ -30,6 +30,7 @@ CREATE TABLE `users` (
   `full_name` text NOT NULL,
   `age` int(11) unsigned NOT NULL,
   `hash_password` text NOT NULL,
+  `salt` text,
   PRIMARY KEY (`userid`),
   UNIQUE KEY `userid_UNIQUE` (`userid`),
   UNIQUE KEY `username_UNIQUE` (`username`)
@@ -54,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-21 10:54:14
+-- Dump completed on 2018-02-24  9:55:25

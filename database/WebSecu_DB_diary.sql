@@ -30,10 +30,11 @@ CREATE TABLE `diary` (
   `public` tinyint(1) NOT NULL,
   `text` text,
   `publish_date` datetime NOT NULL,
-  `token` text,
   `author` varchar(45) DEFAULT NULL,
   `diary_id` int(11) NOT NULL AUTO_INCREMENT,
-  UNIQUE KEY `diary_id_UNIQUE` (`diary_id`)
+  UNIQUE KEY `diary_id_UNIQUE` (`diary_id`),
+  KEY `userid_idx` (`userid`),
+  CONSTRAINT `userid` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -55,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-21 10:54:14
+-- Dump completed on 2018-02-24  9:55:25
