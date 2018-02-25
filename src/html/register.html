@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--[if IE 9]>         <html class="no-js lt-ie10" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <title>Secret Diary Manager - Registration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="shortcut icon" href="img/favicon.png">
+        <!-- Bootstrap is included -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/plugins.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/themes.css">
+        <script src="js/vendor/modernizr-3.3.1.min.js"></script>
+		<script src="js/glob.js"></script>
+		
+    </head>
+    <body>
+        <img src="img/main.jpg" alt="Full Background" class="full-bg animation-pulseSlow">
+        <div id="login-container">
+            <h1 class="h2 text-light text-center push-top-bottom animation-slideDown">
+                <i class="fa fa-plus"></i> <strong>Create Account</strong>
+            </h1>
+            <div class="block animation-fadeInQuickInv">
+                <div class="block-title">
+                    <div class="block-options pull-right">
+                        <a href="index.html" class="btn btn-effect-ripple btn-primary" data-toggle="tooltip" data-placement="left" title="Back to login"><i class="fa fa-user"></i></a>
+                    </div>
+                    <h2>Register</h2>
+                </div>
+
+                <form id="form-register" class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="text" id="register-username" name="register-username" class="form-control" placeholder="Username">
+                        </div>
+                    </div>
+					  <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="text" id="register-fullname" name="register-fullname" class="form-control" placeholder="Fullname">
+                        </div>
+                    </div>
+						  <div class="form-group">
+                        <div class="col-xs-12">                        
+						<input type="text" id="register-dob" name="register-dob" placeholder="Date of Birth"  class="form-control input-datepicker datepickerdob" data-date-format="mm/dd/yy" placeholder="mm/dd/yy" data-date-end-date="-1d">
+							    
+                        </div>
+                    </div>					
+                    <!-- TO DO <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="text" id="register-email" name="register-email" class="form-control" placeholder="Email">
+                        </div>
+                    </div>-->
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="password" id="register-password" name="register-password" class="form-control" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="password" id="register-password-verify" name="register-password-verify" class="form-control" placeholder="Verify Password">
+                        </div>
+                    </div>
+                    <div class="form-group form-actions">
+                        <div class="col-xs-6">
+                          <a href="./index.html"  title="Create new account"> Back to login</a>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <button type="submit" class="btn btn-effect-ripple btn-primary"><i class="fa fa-plus"></i> Create Account</button>
+                        </div>
+                    </div>
+					<div class="text-center lblerror" style="display:none"><code><span >Registration failed</span> <span class="servererror"> </span></code></div>
+					<div class="text-center lblsucsess" style="display:none"><code class="codesuccess"><span >Successfully Registered. Please Login.</span></code></div>
+                </form>
+            </div>       
+        </div>
+
+        <!-- jQuery, Bootstrap, jQuery plugins and Custom JS code -->
+        <script src="js/vendor/jquery-2.2.4.min.js"></script>
+        <script src="js/vendor/bootstrap.min.js"></script>
+		   <script>
+		
+		$(function() {
+        $( ".datepickerdob" ).datepicker({
+            dateFormat : 'mm/dd/yy',
+            forceParse: false,
+            calendarWeeks: true,
+            autoclose: true
+        });
+    });
+		</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/app.js"></script>
+     
+        <script src="js/pages/readyRegister.js"></script>
+        <script>$(function(){ ReadyRegister.init(); });		
+		
+		</script>
+    </body>
+</html>
