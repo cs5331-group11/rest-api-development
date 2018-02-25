@@ -10,6 +10,8 @@ import datetime
 from functools import wraps
 import json
 import os
+import uuid
+import binascii
 
 app = Flask(__name__)
 # Enable cross origin sharing for all endpoints
@@ -17,7 +19,7 @@ CORS(app)
 
 # Remember to update this list
 ENDPOINT_LIST = ['/', '/meta/heartbeat', '/meta/members', '/user', '/users/register',
-                 '/user/authenticate', '/diary', 'diary/create', 'diary/delete', 'diary/permission']
+                 '/user/authenticate', '/diary', '/diary/create', '/diary/delete', '/diary/permission']
 
 #database access
 
@@ -51,25 +53,29 @@ class DiaryData(db.Model):
     id_user = db.Column(db.TEXT, db.ForeignKey('user_data.id'),
                           nullable=False)
 
+class TokenData(db.Model):
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    id_user = db.Column(db.INTEGER, db.ForeignKey('user_data.id'), nullable=False)
+    token = db.Column(db.String(36), nullable=False, index=True, default=lambda: str(uuid.uuid4()))
+    valid = db.Column(db.Boolean, nullable=False, default=True)
+    created_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow())
 
-def token_required(f):
+
+def token_required_uuid4(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
-
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-
-        if not token:
-            return jsonify({'message' : 'Token is missing!'}), 401
-
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
-            current_user = UserData.query.filter_by(id=data['id']).first()
-        except:
-            return jsonify({'message' : 'Token is invalid!'}), 401
+            payload = request.get_json(force=True)
 
-        return f(current_user, *args, **kwargs)
+            token = TokenData.query.filter_by(token=payload['token'],valid=True).order_by(TokenData.id.desc()).first()
+            user = UserData.query.filter_by(id=token.id_user).first()
+
+            return f(user.id, *args, **kwargs)
+        except:
+            # can be 500?
+            return jsonify({'status':False, 'error':'Invalid authentication token.'})
+
+        return jsonify({'status':False, 'error':'Invalid authentication token.'})
 
     return decorated
 
@@ -93,7 +99,6 @@ def make_json_response(data, status=True, code=200):
     return response
 
 
-
 @app.route("/")
 def index():
     """Returns a list of implemented endpoints."""
@@ -107,17 +112,17 @@ def meta_heartbeat():
 
 
 @app.route("/meta/members")
+@token_required_uuid4
 def meta_members():
     """Returns a list of team members"""
     with open("./team_members.txt") as f:
         team_members = f.read().strip().split("\n")
     return make_json_response(team_members)
 
+
 # User endpoints
-
-
 @app.route('/user', methods=['GET'])
-@token_required
+@token_required_uuid4
 def user_list():
 
     users = UserData.query.all()
@@ -130,23 +135,28 @@ def user_list():
 
     return jsonify({'result': output})
 
+
 @app.route('/users/register', methods=['POST'])
 def user_register():
-    data = request.get_json()
+    data = request.get_json(force=True)
 
-    hashed_password = generate_password_hash(data['password'], method='sha256')
+    users_match = UserData.query.filter_by(username=data['username']).count()
+    if users_match > 0:
+        return jsonify({'status':False, 'error':'User already exists!'})
+
+    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256',
+        salt_length=16)
 
     new_user = UserData(username=data['username'], password=hashed_password,
                         fullname=data['fullname'], age=data['age'])
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'New user created!'})
+    return jsonify({'status':True}), 201
 
 
 @app.route('/users/authenticate', methods=['POST'])
-def user_authenticate():
-
+def user_authenticate_uuid4():
     data = request.get_json()
 
     user = UserData.query.filter_by(username=data['username']).first()
@@ -155,18 +165,22 @@ def user_authenticate():
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
     if check_password_hash(user.password, data['password']):
-        token = jwt.encode(
-            {'id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-            app.config['SECRET_KEY'])
+        old_tokens = TokenData.query.filter_by(id_user=user.id).all()
+        for t in old_tokens:
+            t.valid = False
 
-        return jsonify({'token': token.decode('UTF-8')})
+        new_token = TokenData(id_user=user.id)
+        db.session.add(new_token)
+        db.session.commit()
+
+        return jsonify({'token': new_token.token, 'status':True})
 
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
 # diary endpoints
 @app.route('/diary', methods=['GET'])
-#@token_required
+# @token_required_uuid4
 def diary_list():
 
     diaries = DiaryData.query.filter_by(public=1).all()
@@ -188,11 +202,10 @@ def diary_list():
 
 
 @app.route('/diary', methods=['POST'])
-#@token_required
-def diary_list_by_user():
+@token_required_uuid4
+def diary_list_by_user(id_user):
 
-    #id fixed, change later to an authenticated user...
-    diaries = DiaryData.query.filter_by(id_user=2).all()
+    diaries = DiaryData.query.filter_by(id_user=id_user).all()
     output = []
 
     for diary in diaries:
@@ -211,14 +224,13 @@ def diary_list_by_user():
 
 
 @app.route('/diary/create', methods=['POST'])
-#@token_required
+@token_required_uuid4
 def diary_create():
 
     data = request.get_json()
 
-    # id fixed, change later to an authenticated user...
     new_diary = DiaryData(title=data['title'], publish_date=str(datetime.datetime.now()),
-                          public=data['public'], text=data['text'], id_user=1)
+                          public=data['public'], text=data['text'], id_user=id_user)
     db.session.add(new_diary)
     db.session.commit()
 
@@ -226,10 +238,10 @@ def diary_create():
 
 
 @app.route('/diary/delete/<diary_id>', methods=['POST'])
-def diary_delete(diary_id):
+@token_required_uuid4
+def diary_delete(id_user, diary_id):
 
-    # id fixed, change later to an authenticated user...
-    diary = DiaryData.query.filter_by(id=diary_id, id_user=1).first()
+    diary = DiaryData.query.filter_by(id=diary_id, id_user=id_user).first()
 
     if not diary:
         return jsonify({'message': 'No diary found!'}), 200
@@ -241,12 +253,12 @@ def diary_delete(diary_id):
 
 
 @app.route('/diary/permission', methods=['POST'])
-def diary_permission():
+@token_required_uuid4
+def diary_permission(id_user):
 
-    # id fixed, change later to an authenticated user...
     data = request.get_json()
 
-    diary = DiaryData.query.filter_by(id=data['id'], id_user=1).first()
+    diary = DiaryData.query.filter_by(id=data['id'], id_user=id_user).first()
 
     if not diary:
         return jsonify({'status': False}), 200
@@ -265,5 +277,5 @@ if __name__ == '__main__':
     os.chdir(dname)
 
     # Run the application
-
+    db.create_all()
     app.run(debug=False, port=8081, host="0.0.0.0")
