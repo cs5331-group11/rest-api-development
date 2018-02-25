@@ -16,22 +16,9 @@ function submitDataD()
 			 checkAuth();
 			 if(testingAlerts){alert("private data get: "+window.sessionStorage.getItem("tkn"));}
              var dt = {"token": window.sessionStorage.getItem("tkn")};
-
-              $.ajax({
-				type: 'POST',
-				async: false,
-				url: privateDiaryPostUrl,
-				contentType: "application/json",
-				dataType: 'json',
-				data: JSON.stringify(dt),
-                success : function(r) {
-                  if(testingAlerts){alert(JSON.stringify(r));}
-				   processResponseInit(JSON.stringify(r));
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                  alert("[ajax] server connection/internal error");
-                }
-	});
+			 postRequest(privateDiaryPostUrl,dt,processResponseInit);
+            
+	
 }
 function processResponseInit(vv)
 {	$("#dtbDiaryPublic tbody").empty();
@@ -184,21 +171,9 @@ function submitDataUpdate(diaryId,isPrivate)
 			 checkAuth();
              var dt = {"token": getTkn(), "id": parseInt(diaryId),"private": isPrivate};
 			 if(testingAlerts){alert("submitting data: "+JSON.stringify(dt));}
-              $.ajax({
-				type: 'POST',
-				async: false,
-				url: updatePermissionDiaryPostUrl,
-				contentType: "application/json",
-				dataType: 'json',
-                data: JSON.stringify(dt),
-                success : function(r) {
-                   if(testingAlerts){alert(JSON.stringify(r));}
-				   processUpdateResponseBack(JSON.stringify(r));
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                  alert("[ajax] server connection/internal error");
-                }
-	});
+			 
+			  postRequest(updatePermissionDiaryPostUrl,dt,processUpdateResponseBack);
+            
 }
 
 function processUpdateResponseBack(data)
@@ -237,21 +212,8 @@ function submitDataDelete(diaryId)
 			 checkAuth();
              var dt = {"token": getTkn(), "id": parseInt(diaryId)};
 			 if(testingAlerts){alert("submitting data: "+JSON.stringify(dt));}
-              $.ajax({
-				type: 'POST',
-				async: false,
-				url: deleteDiaryPostUrl,
-				contentType: "application/json",
-				dataType: 'json',
-                data: JSON.stringify(dt),
-                success : function(r) {
-                   if(testingAlerts){alert(JSON.stringify(r));}
-				   processDeleteResponseBack(JSON.stringify(r));
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                  alert("[ajax] server connection/internal error");
-                }
-	});
+			 postRequest(deleteDiaryPostUrl,dt,processDeleteResponseBack);
+            
 }
 
 function processDeleteResponseBack(data)
@@ -288,21 +250,7 @@ function submitDataCreate(title,note,ispublic)
 			 checkAuth();
              var dt = {"token": getTkn(),"title": title,"public": ispublic,"text": note};
 			 if(testingAlerts){alert("submitting data: "+JSON.stringify(dt));}
-              $.ajax({
-				type: 'POST',
-				async: false,
-				url: CreateDiaryPostUrl,
-				contentType: "application/json",
-				dataType: 'json',
-                data: JSON.stringify(dt),
-                success : function(r) {
-                   if(testingAlerts){alert(JSON.stringify(r));}
-				   processCreateResponseBack(JSON.stringify(r));
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                  alert("[ajax] server connection/internal error");
-                }
-	});
+			 postRequest(CreateDiaryPostUrl,dt,processCreateResponseBack);
 }
 
 function processCreateResponseBack(data)

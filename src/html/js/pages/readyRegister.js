@@ -103,21 +103,7 @@ function submitData(username,pass,fullname,age)
 {	
              var dt = {"username": username,"password": pass,"fullname": fullname,"age": parseInt(age)};
 			 if(testingAlerts){alert("submitting data: "+JSON.stringify(dt));}
-              $.ajax({
-				type: 'POST',
-				async: false,
-				url: registerPostUrl,
-				contentType: "application/json",
-				dataType: 'json',
-                data: JSON.stringify(dt),
-                success : function(r) {
-                   if(testingAlerts){alert(JSON.stringify(r));}
-				   processResponse(JSON.stringify(r));
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                  alert("[ajax] server connection/internal error");
-                }
-	});
+			  postRequest(registerPostUrl,dt,processResponse);
 }
 
 var getyears = function(seconddate){

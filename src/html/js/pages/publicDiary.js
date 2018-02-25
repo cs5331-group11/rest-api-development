@@ -14,21 +14,8 @@ $(function () {
 						
 function submitData()
 {	$("#mainW").empty();
-              
-              $.ajax({
-				type: 'GET',
-				async: false,
-				url: publicDiaryGetUrl,
-				contentType: "application/json",
-				dataType: 'json',
-                success : function(r) {
-                   if(testingAlerts){alert(JSON.stringify(r));}
-				   processResponse(JSON.stringify(r));
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                  alert("[ajax] server connection/internal error");
-                }
-	});
+              getRequest(publicDiaryGetUrl,processResponse);
+         
 }
 function processResponse(data)
 {	

@@ -55,22 +55,8 @@ var ReadyLogin = function() {
 function submitData(username,pass)
 {	
              var dt = {"username": username,"password": pass};
-
-              $.ajax({
-				type: 'POST',
-				async: false,
-				url: loginPostUrl,
-				contentType: "application/json",
-				dataType: 'json',
-                data: JSON.stringify(dt),
-                success : function(r) {
-                   if(testingAlerts){alert(JSON.stringify(r));}
-				   authenticate(JSON.stringify(r));
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                  alert("[ajax] server connection/internal error");
-                }
-	});
+postRequest(loginPostUrl,dt,authenticate);
+         
 }
 
 function authenticate(data)
