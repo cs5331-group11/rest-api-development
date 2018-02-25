@@ -1,17 +1,17 @@
-var serverUrl='http://localhost';   /* service host:port */
+var serverUrl='http://localhost:8080';   /* service host:port */
 
-var loginPostUrl = serverUrl+'/rest/users/authenticate/'; 
-var publicDiaryGetUrl = serverUrl+'/rest/diary/';
-var privateDiaryPostUrl = serverUrl+'/rest/diary/';
-var registerPostUrl = serverUrl+'/rest/users/register/';
-var userExpirePostUrl = serverUrl+'/rest/users/expire/';
-var CreateDiaryPostUrl = serverUrl+'/rest/diary/create/';
-var deleteDiaryPostUrl = serverUrl+'/rest/diary/delete/';
-var updatePermissionDiaryPostUrl = serverUrl+'/rest/diary/permission/';
+var loginPostUrl = serverUrl+'/users/authenticate/'; 
+var publicDiaryGetUrl = serverUrl+'/diary/';
+var privateDiaryPostUrl = serverUrl+'/diary/';
+var registerPostUrl = serverUrl+'/users/register/';
+var userExpirePostUrl = serverUrl+'/users/expire/';
+var CreateDiaryPostUrl = serverUrl+'/diary/create/';
+var deleteDiaryPostUrl = serverUrl+'/diary/delete/';
+var updatePermissionDiaryPostUrl = serverUrl+'/diary/permission/';
  
 
-var testing=true; /* for testing purpose  */
-var testingAlerts=true; /* for debugging purpose  */
+var testing=false; /* for testing purpose  */
+var testingAlerts=false; /* for debugging purpose  */
 
 var testingLoginResponse='{"status": true,"token": "6bf00d02-dffc-4849-a635-a21b08500d61"}';
 var testingPublicDiaryResponse='{"status": true,"result": ['+
