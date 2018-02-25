@@ -1,11 +1,13 @@
-var loginPostUrl = 'http://jayampathi.com/rest/users/authenticate/'; 
-var publicDiaryGetUrl = 'http://jayampathi.com/rest/diary/';
-var privateDiaryPostUrl = 'http://jayampathi.com/rest/diary/';
-var registerPostUrl = 'http://jayampathi.com/rest/users/register/';
-var userExpirePostUrl = 'http://jayampathi.com/rest/users/expire/';
-var CreateDiaryPostUrl = 'http://jayampathi.com/rest/diary/create/';
-var deleteDiaryPostUrl = 'http://jayampathi.com/rest/diary/delete/';
-var updatePermissionDiaryPostUrl = 'http://jayampathi.com/rest/diary/permission/';
+var serverUrl='http://localhost';   /* service host:port */
+
+var loginPostUrl = serverUrl+'/rest/users/authenticate/'; 
+var publicDiaryGetUrl = serverUrl+'/rest/diary/';
+var privateDiaryPostUrl = serverUrl+'/rest/diary/';
+var registerPostUrl = serverUrl+'/rest/users/register/';
+var userExpirePostUrl = serverUrl+'/rest/users/expire/';
+var CreateDiaryPostUrl = serverUrl+'/rest/diary/create/';
+var deleteDiaryPostUrl = serverUrl+'/rest/diary/delete/';
+var updatePermissionDiaryPostUrl = serverUrl+'/rest/diary/permission/';
  
 
 var testing=true; /* for testing purpose  */
