@@ -17,7 +17,7 @@ CORS(app)
 
 # Remember to update this list
 ENDPOINT_LIST = ['/', '/meta/heartbeat', '/meta/members', '/user', '/users/register',
-                 '/user/authenticate', '/diary', 'diary/create', 'diary/delete']
+                 '/user/authenticate', '/diary', 'diary/create', 'diary/delete', 'diary/permission']
 
 #database access
 
@@ -29,6 +29,7 @@ config.read('../../cs5331_db.conf')
 app.config['SECRET_KEY'] = 'cs5331secretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + config.get('DB',  'dbname')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['JSON_SORT_KEYS'] = False
 
 db = SQLAlchemy(app)
 
@@ -165,48 +166,96 @@ def user_authenticate():
 
 # diary endpoints
 @app.route('/diary', methods=['GET'])
-@token_required
+#@token_required
 def diary_list():
-    diaries = DiaryData.query.all()
+
+    diaries = DiaryData.query.filter_by(public=1).all()
     output = []
 
     for diary in diaries:
         diary_data = {}
         diary_data['id'] = diary.id
         diary_data['title'] = diary.title
+        user_data = UserData.query.filter_by(id=diary.id_user).first()
+        diary_data['author'] = user_data.fullname
         diary_data['publish_date'] = diary.publish_date
+        diary_data['public'] = diary.public
         diary_data['text'] = diary.text
 
         output.append(diary_data)
 
-    return jsonify({'result': output})
+    return jsonify({'status': True, 'result': output }), 200
+
+
+@app.route('/diary', methods=['POST'])
+#@token_required
+def diary_list_by_user():
+
+    #id fixed, change later to an authenticated user...
+    diaries = DiaryData.query.filter_by(id_user=2).all()
+    output = []
+
+    for diary in diaries:
+        diary_data = {}
+        diary_data['id'] = diary.id
+        diary_data['title'] = diary.title
+        user_data = UserData.query.filter_by(id=diary.id_user).first()
+        diary_data['author'] = user_data.fullname
+        diary_data['publish_date'] = diary.publish_date
+        diary_data['public'] = diary.public
+        diary_data['text'] = diary.text
+
+        output.append(diary_data)
+
+    return jsonify({'status': True, 'result': output}), 200
 
 
 @app.route('/diary/create', methods=['POST'])
-@token_required
-def diary_create(current_user):
+#@token_required
+def diary_create():
+
     data = request.get_json()
 
+    # id fixed, change later to an authenticated user...
     new_diary = DiaryData(title=data['title'], publish_date=str(datetime.datetime.now()),
-                          public=data['public'], text=data['text'], id_user=current_user.id)
+                          public=data['public'], text=data['text'], id_user=1)
     db.session.add(new_diary)
     db.session.commit()
 
-    return jsonify({'message': "Diary created!"})
+    return jsonify({'status': True, 'result': new_diary.id}), 201
 
 
-@app.route('/diary/delete/<diary_id>', methods=['DELETE'])
-def diary_delete(current_user, diary_id):
+@app.route('/diary/delete/<diary_id>', methods=['POST'])
+def diary_delete(diary_id):
 
-    diary = DiaryData.query.filter_by(id=diary_id, user_id=current_user.id).first()
+    # id fixed, change later to an authenticated user...
+    diary = DiaryData.query.filter_by(id=diary_id, id_user=1).first()
 
     if not diary:
-        return jsonify({'message': 'No diary found!'})
+        return jsonify({'message': 'No diary found!'}), 200
 
     db.session.delete(diary)
     db.session.commit()
 
-    return jsonify({'message': 'Diary entry deleted!'})
+    return jsonify({'status': True}), 201
+
+
+@app.route('/diary/permission', methods=['POST'])
+def diary_permission():
+
+    # id fixed, change later to an authenticated user...
+    data = request.get_json()
+
+    diary = DiaryData.query.filter_by(id=data['id'], id_user=1).first()
+
+    if not diary:
+        return jsonify({'status': False}), 200
+
+    diary.public = data['public']
+
+    db.session.commit()
+
+    return jsonify({'status': True}), 201
 
 
 if __name__ == '__main__':
