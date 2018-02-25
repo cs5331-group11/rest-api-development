@@ -5,8 +5,11 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-TEAMID=`md5sum README.md | cut -d' ' -f 1`
-docker kill $(docker ps -q)
-docker rm $(docker ps -a -q)
+PROXY=nginx
+MODULE=cs5331
+#TEAMID=${MODULE}-${PROXY}-`md5sum README.md | cut -d' ' -f 1`
+TEAMID=${MODULE}-${PROXY}
+docker kill $(docker ps -a | fgrep ${MODULE}-${PROXY} | awk '{print $1}') &>/dev/null
+docker rm $(docker ps -a | fgrep ${MODULE}-${PROXY} | awk '{print $1}') &>/dev/null
 docker build . -t $TEAMID
-docker run -p 80:80 -p 8080:8080 -t $TEAMID
+docker run --name=${TEAMID} -p 80:80 -p 8080:8080 -t $TEAMID $@
