@@ -181,3 +181,6 @@ body {
 		    background-color: #7ec3fc;
 	
 }
+
+.lblerror { display:none; } 
+.lblsucsess { display:none; }
