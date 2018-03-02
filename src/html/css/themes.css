@@ -184,3 +184,6 @@ body {
 
 .lblerror { display:none; } 
 .lblsucsess { display:none; }
+.lblerrorGrid { display:none; } 
+.lblsucsessGrid { display:none; }
+

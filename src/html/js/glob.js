@@ -1,13 +1,14 @@
 var serverUrl='http://localhost:8080';   /* service host:port */
 
-var loginPostUrl = serverUrl+'/users/authenticate/'; 
-var publicDiaryGetUrl = serverUrl+'/diary/';
-var privateDiaryPostUrl = serverUrl+'/diary/';
-var registerPostUrl = serverUrl+'/users/register/';
-var userExpirePostUrl = serverUrl+'/users/expire/';
-var CreateDiaryPostUrl = serverUrl+'/diary/create/';
-var deleteDiaryPostUrl = serverUrl+'/diary/delete/';
-var updatePermissionDiaryPostUrl = serverUrl+'/diary/permission/';
+var loginPostUrl = serverUrl+'/users/authenticate'; 
+var publicDiaryGetUrl = serverUrl+'/diary';
+var privateDiaryPostUrl = serverUrl+'/diary';
+var registerPostUrl = serverUrl+'/users/register';
+var userExpirePostUrl = serverUrl+'/users/expire';
+var CreateDiaryPostUrl = serverUrl+'/diary/create';
+var deleteDiaryPostUrl = serverUrl+'/diary/delete';
+var updatePermissionDiaryPostUrl = serverUrl+'/diary/permission';
+var updatePermissionDiaryPostUrl = serverUrl+'/meta/members';
  
 
 var testing=false; /* for testing purpose  */
@@ -46,3 +47,4 @@ var testingPrivateDiaryResponse='{"status": true,"result": ['+
  var testingcreateDiaryResponse='{"status": true,"result": 2}';
  var testingdeleteDiaryResponse='{"status": true}';
  var testingupdatePermissionDiaryResponse='{"status": true}';
+ var testingmetaMembersResponse='{"status": true,"result": ["Jeremy Heng","John Galt","Audrey Shida"]}';
