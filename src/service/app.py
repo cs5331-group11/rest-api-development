@@ -25,7 +25,7 @@ ENDPOINT_LIST = ['/', '/meta/heartbeat', '/meta/members', '/user', '/users/regis
 
 # Read config file
 config = configparser.ConfigParser()
-config.read('../../cs5331_db.conf')
+config.read('/cs5331_db.conf')
 
 
 app.config['SECRET_KEY'] = 'cs5331secretkey'
