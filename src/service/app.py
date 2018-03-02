@@ -120,7 +120,7 @@ def meta_members():
 
 
 # User endpoints
-@app.route('/user', methods=['GET'])
+@app.route('/users', methods=['GET'])
 @token_required_uuid4
 def user_list():
 
