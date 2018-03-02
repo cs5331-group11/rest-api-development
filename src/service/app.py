@@ -73,7 +73,6 @@ def token_required_uuid4(f):
             return f(user.id, *args, **kwargs)
         except Exception as e:
             # can be 500?
-            print e
             return jsonify({'status':False, 'error':'Invalid authentication token.'})
 
         return jsonify({'status':False, 'error':'Invalid authentication token.'})
@@ -206,71 +205,82 @@ def diary_list():
 @token_required_uuid4
 @app.route('/diary', methods=['POST'])
 def diary_list_by_user(id_user):
+    try:
+        diaries = DiaryData.query.filter_by(id_user=id_user).all()
+        output = []
 
-    diaries = DiaryData.query.filter_by(id_user=id_user).all()
-    output = []
+        for diary in diaries:
+            diary_data = {}
+            diary_data['id'] = diary.id
+            diary_data['title'] = diary.title
+            user_data = UserData.query.filter_by(id=diary.id_user).first()
+            diary_data['author'] = user_data.fullname
+            diary_data['publish_date'] = diary.publish_date
+            diary_data['public'] = diary.public
+            diary_data['text'] = diary.text
 
-    for diary in diaries:
-        diary_data = {}
-        diary_data['id'] = diary.id
-        diary_data['title'] = diary.title
-        user_data = UserData.query.filter_by(id=diary.id_user).first()
-        diary_data['author'] = user_data.fullname
-        diary_data['publish_date'] = diary.publish_date
-        diary_data['public'] = diary.public
-        diary_data['text'] = diary.text
+            output.append(diary_data)
 
-        output.append(diary_data)
+        return jsonify({'status': True, 'result': output}), 200
 
-    return jsonify({'status': True, 'result': output}), 200
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
+
 
 
 @token_required_uuid4
 @app.route('/diary/create', methods=['POST'])
-def diary_create():
+def diary_create(id_user):
+    try:
+        data = request.get_json()
 
-    data = request.get_json()
+        new_diary = DiaryData(title=data['title'], publish_date=str(datetime.datetime.now()),
+                              public=data['public'], text=data['text'], id_user=id_user)
+        db.session.add(new_diary)
+        db.session.commit()
 
-    new_diary = DiaryData(title=data['title'], publish_date=str(datetime.datetime.now()),
-                          public=data['public'], text=data['text'], id_user=id_user)
-    db.session.add(new_diary)
-    db.session.commit()
+        return jsonify({'status': True, 'result': new_diary.id}), 201
 
-    return jsonify({'status': True, 'result': new_diary.id}), 201
-
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
 
 @token_required_uuid4
 @app.route('/diary/delete/<diary_id>', methods=['POST'])
 def diary_delete(id_user, diary_id):
+    try:
+        diary = DiaryData.query.filter_by(id=diary_id, id_user=id_user).first()
 
-    diary = DiaryData.query.filter_by(id=diary_id, id_user=id_user).first()
+        if not diary:
+            return jsonify({'message': 'No diary found!'}), 200
 
-    if not diary:
-        return jsonify({'message': 'No diary found!'}), 200
+        db.session.delete(diary)
+        db.session.commit()
 
-    db.session.delete(diary)
-    db.session.commit()
+        return jsonify({'status': True}), 201
 
-    return jsonify({'status': True}), 201
-
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
 
 @token_required_uuid4
 @app.route('/diary/permission', methods=['POST'])
 def diary_permission(id_user):
+    try:
 
-    data = request.get_json()
+        data = request.get_json()
 
-    diary = DiaryData.query.filter_by(id=data['id'], id_user=id_user).first()
+        diary = DiaryData.query.filter_by(id=data['id'], id_user=id_user).first()
 
-    if not diary:
-        return jsonify({'status': False}), 200
+        if not diary:
+            return jsonify({'status': False}), 200
 
-    diary.public = data['public']
+        diary.public = data['public']
 
-    db.session.commit()
+        db.session.commit()
 
-    return jsonify({'status': True}), 201
+        return jsonify({'status': True}), 201
 
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
 
 if __name__ == '__main__':
     # Change the working directory to the script directory
