@@ -14,6 +14,7 @@ NAME='fullname{}'.format(binascii.hexlify(os.urandom(4)))
 
 NEW_USER = {'username':USERNAME, 'password':PASSWORD,
 	'fullname':NAME, 'age':ord(os.urandom(1)) % 40}
+CURRENT_TOKEN = None
 
 class CS5331Test(unittest.TestCase):
 	def setUp(self):
@@ -138,7 +139,7 @@ class CS5331Test(unittest.TestCase):
 		self.assertEqual(resp['status'], True)
 
 	def test_1300_expire_fail(self):
-		token = auth()
+		token = CURRENT_TOKEN
 		r = post('/users/expire', {'token':token})
 		resp = r.json()
 
@@ -176,6 +177,7 @@ def auth():
 		return False
 
 	print 'token={}'.format(resp['token'])
+	CURRENT_TOKEN = resp['token']
 	return resp['token']
 
 
