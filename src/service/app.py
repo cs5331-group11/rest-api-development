@@ -124,16 +124,18 @@ def meta_members():
 @token_required_uuid4
 @app.route('/users', methods=['POST'])
 def user_list():
+    payload = request.get_json()
+    token = payload['token']
 
-    users = UserData.query.all()
-    output = []
+    user_token = TokenData.query.filter_by(token=token).filter_by(valid=True).first()
+    user = UserData.query.filter_by(id=user_token.id_user).first()
+    user_info = {
+        'username':user.username,
+        'fullname':user.fullname,
+        'age':user.age
+    }
 
-    for user in users:
-        user_data = {}
-        user_data['username'] = user.username
-        output.append(user_data)
-
-    return jsonify({'result': output})
+    return jsonify({'status':True, 'result':user_info})
 
 
 @app.route('/users/register', methods=['POST'])

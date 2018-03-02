@@ -12,6 +12,9 @@ USERNAME='user{}'.format(binascii.hexlify(os.urandom(4)))
 PASSWORD='pass{}'.format(binascii.hexlify(os.urandom(4)))
 NAME='fullname{}'.format(binascii.hexlify(os.urandom(4)))
 
+NEW_USER = {'username':USERNAME, 'password':PASSWORD,
+	'fullname':NAME, 'age':ord(os.urandom(1)) % 40}
+
 class CS5331Test(unittest.TestCase):
 	def setUp(self):
 		print '\nIn method', self._testMethodName
@@ -40,25 +43,21 @@ class CS5331Test(unittest.TestCase):
 		self.assertGreaterEqual(len(resp['result']), 4)
 
 	def test_0400_register_user_201(self):
-		payload = {'username':USERNAME, 'password':PASSWORD,
-			'fullname':NAME, 'age':ord(os.urandom(1)) % 40}
-		r = post('/users/register', payload)
+		r = post('/users/register', NEW_USER)
 		resp = r.json()
 
 		self.assertEqual(int(r.status_code), 201)
 		self.assertEqual(resp['status'], True)
 
 	def test_0401_register_user_duplicate(self):
-		payload = {'username':USERNAME, 'password':PASSWORD,
-			'fullname':NAME, 'age':ord(os.urandom(1)) % 40}
-		r = post('/users/register', payload)
+		r = post('/users/register', NEW_USER)
 		resp = r.json()
 
 		self.assertEqual(int(r.status_code), 200)
 		self.assertEqual(resp['status'], False)
 		self.assertEqual(resp['error'], 'User already exists!')
 
-	def test_0500auth(self):
+	def test_0500_auth(self):
 		payload = {'username':USERNAME, 'password':PASSWORD}
 		r = post('/users/authenticate', payload)
 		resp = r.json()
@@ -67,7 +66,7 @@ class CS5331Test(unittest.TestCase):
 		self.assertEqual(resp['status'], True)
 		self.assertRegexpMatches(resp['token'], '^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$')
 
-	def test_0501auth_fail(self):
+	def test_0501_auth_fail(self):
 		payload = {'username':USERNAME, 'password':'wrongpassword'}
 		r = post('/users/authenticate', payload)
 		resp = r.json()
@@ -84,9 +83,9 @@ class CS5331Test(unittest.TestCase):
 
 		self.assertEqual(int(r.status_code), 200)
 		self.assertEqual(resp['status'], True)
-		self.assertEqual(resp['username'], payload['username'])
-		self.assertEqual(resp['fullname'], payload['fullname'])
-		self.assertEqual(resp['age'], payload['age'])
+		self.assertEqual(resp['result']['username'], NEW_USER['username'])
+		self.assertEqual(resp['result']['fullname'], NEW_USER['fullname'])
+		self.assertEqual(resp['result']['age'], NEW_USER['age'])
 
 	# def test_0900_diary_get_public_diary(self):
 	# 	r = get('/')
