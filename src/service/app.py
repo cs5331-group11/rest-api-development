@@ -19,7 +19,7 @@ CORS(app)
 
 # Remember to update this list
 ENDPOINT_LIST = ['/', '/meta/heartbeat', '/meta/members', '/user', '/users/register',
-                 '/user/authenticate', '/diary', '/diary/create', '/diary/delete', '/diary/permission']
+                 '/users/authenticate', '/users/expire','/diary', '/diary/create', '/diary/delete', '/diary/permission']
 
 #database access
 
@@ -178,6 +178,25 @@ def user_authenticate_uuid4():
         return jsonify({'token': new_token.token, 'status':True})
 
     return jsonify({'status':False}), 200
+
+
+@token_required_uuid4
+@app.route('/users/expire', methods=['POST'])
+def user_expire():
+    try:
+        payload = request.get_json()
+        token = payload['token']
+
+        user_token = TokenData.query.filter_by(token=token).filter_by(valid=True).first()
+        user_token.valid=False
+        db.session.commit()
+
+        return jsonify({'status':True})
+    except Exception as e:
+        print e
+        return jsonify({'status':False})
+
+    return jsonify({'status':False})
 
 
 # diary endpoints
