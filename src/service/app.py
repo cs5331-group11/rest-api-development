@@ -162,7 +162,7 @@ def user_authenticate_uuid4():
     user = UserData.query.filter_by(username=data['username']).first()
 
     if not user:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return jsonify({'status':False}), 200
 
     if check_password_hash(user.password, data['password']):
         old_tokens = TokenData.query.filter_by(id_user=user.id).all()
