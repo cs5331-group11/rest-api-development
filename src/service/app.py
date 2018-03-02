@@ -120,7 +120,7 @@ def meta_members():
 
 
 # User endpoints
-@app.route('/users', methods=['GET'])
+@app.route('/users', methods=['POST'])
 @token_required_uuid4
 def user_list():
 
@@ -174,7 +174,7 @@ def user_authenticate_uuid4():
 
         return jsonify({'token': new_token.token, 'status':True})
 
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    return jsonify({'status':False}), 200
 
 
 # diary endpoints
