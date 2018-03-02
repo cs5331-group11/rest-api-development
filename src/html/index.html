@@ -1,26 +1,81 @@
-<html>
+<!DOCTYPE html>
+<!--[if IE 9]>         <html class="no-js lt-ie10" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
     <head>
+        <meta charset="utf-8">
+		<title>Secret Diary Manager Login</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="shortcut icon" href="img/favicon.png">
+
+        <!-- Bootstrap is included -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/plugins.css">
+        <!--All Bootstrap overwrites are defined in here -->
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/themes.css">
+        <script src="js/vendor/modernizr-3.3.1.min.js"></script>
+		<script src="js/glob.js"></script>
+		  <script src="js/vendor/jquery-2.2.4.min.js"></script>			
+        <script src="js/vendor/bootstrap.min.js"></script>
+        <script src="js/pluginsForLogin_Compressed.js"></script>
+        <script src="js/appForLogin_Comressed.js"></script>
+		<script type='text/javascript' src="js/vendor/jquery.xdomainrequest.min.js"></script>
+		<script type='text/javascript' src="js/ajaxFacade.js"></script>
+ 
     </head>
     <body>
-        <h1>Secret Diary Front End</h1>
-        <p>Requirements for the front end are as follows:</p>
-        <ul>
-            <li>Register a user</li>
-            <li>Login</li>
-            <li>Logout</li>
-            <li>Display all public diary entries</li>
-            <li>Display an authenticated user's diary entries</li>
-            <li>Create a new diary entry</li>
-            <li>Delete an existing diary entry</li>
-            <li>Toggle the permissions on an existing diary entry</li>
-        </ul>
-        <!-- the following is a demo on how you may display data retrieved from
-             the API
-        -->
-        <div id="demo_heartbeat">
+	  <img src="img/main.jpg" alt="Full Background" class="full-bg animation-pulseSlow">
+        <div id="login-container">
+            <h1 class="h3 text-light text-center push-top-bottom animation-slideDown">
+                <i class="fa"><img src="./img/logo.png"/></i> <strong>Welcome to Secret Diary Manager</strong>
+            </h1>
+
+            <div class="block animation-fadeInQuickInv">
+                <div class="block-title">
+                    <div class="block-options pull-right">
+                       <a href="team.html"  class="btn btn-effect-ripple btn-primary" data-toggle="tooltip" data-placement="left" title="Team Members"><i class="gi gi-parents"></i></a>
+                        <a href="register.html" class="btn btn-effect-ripple btn-primary" data-toggle="tooltip" data-placement="left" title="Create new account"><i class="fa fa-plus"></i></a>
+                    </div>
+                    <h2>Please Login</h2>
+                </div>
+
+                <form id="form-login" class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="text" id="login-username" name="login-username" class="form-control" placeholder="Your Username..">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="password" id="login-password" name="login-password" class="form-control" placeholder="Your Password..">
+                        </div>
+                    </div>
+                    <div class="form-group form-actions">
+                        <div class="col-xs-8">                          
+							 or <a href="register.html"  title="Create new account">create a new account</a>            
+                        </div>
+						
+                        <div class="col-xs-4 text-right">
+                            <button type="submit" class="btn btn-effect-ripple btn-sm btn-primary"><i class="fa fa-check"></i> Let's Go</button>
+							
+                        </div>
+                    </div>
+					<div class="text-center lblerror" style="display:none"><code><span >Incorrect username/password</span></code></div>
+                </form>
+            </div>
+
+          
+			<footer class="text-muted text-center animation-pullUp">
+                <small><span id="year-copy">2018</span> © <a href="team.html">Our Team </a></small>
+            </footer>
+       
         </div>
-        <div id="demo_members">
-        </div>
-        <script src="./demo.js"></script>
+
+        <!-- jQuery, Bootstrap, jQuery plugins and Custom JS code -->
+      
+  <script src="js/pages/readyLogin.js"></script>
+        <script>$(function(){ ReadyLogin.init(); });</script>
+             
+		
     </body>
 </html>
