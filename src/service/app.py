@@ -112,7 +112,6 @@ def meta_heartbeat():
 
 
 @app.route("/meta/members")
-@token_required_uuid4
 def meta_members():
     """Returns a list of team members"""
     with open("./team_members.txt") as f:
@@ -121,7 +120,7 @@ def meta_members():
 
 
 # User endpoints
-@app.route('/user', methods=['GET'])
+@app.route('/users', methods=['POST'])
 @token_required_uuid4
 def user_list():
 
@@ -162,7 +161,7 @@ def user_authenticate_uuid4():
     user = UserData.query.filter_by(username=data['username']).first()
 
     if not user:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return jsonify({'status':False}), 200
 
     if check_password_hash(user.password, data['password']):
         old_tokens = TokenData.query.filter_by(id_user=user.id).all()
@@ -175,7 +174,7 @@ def user_authenticate_uuid4():
 
         return jsonify({'token': new_token.token, 'status':True})
 
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    return jsonify({'status':False}), 200
 
 
 # diary endpoints
