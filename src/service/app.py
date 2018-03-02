@@ -112,7 +112,6 @@ def meta_heartbeat():
 
 
 @app.route("/meta/members")
-@token_required_uuid4
 def meta_members():
     """Returns a list of team members"""
     with open("./team_members.txt") as f:
