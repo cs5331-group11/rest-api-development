@@ -13,8 +13,6 @@ PASSWORD='pass{}'.format(binascii.hexlify(os.urandom(4)))
 NAME='fullname{}'.format(binascii.hexlify(os.urandom(4)))
 
 class CS5331Test(unittest.TestCase):
-	token = None
-
 	def setUp(self):
 		print '\nIn method', self._testMethodName
 
@@ -60,7 +58,7 @@ class CS5331Test(unittest.TestCase):
 		self.assertEqual(resp['status'], False)
 		self.assertEqual(resp['error'], 'User already exists!')
 
-	def test_0500_auth(self):
+	def test_0500auth(self):
 		payload = {'username':USERNAME, 'password':PASSWORD}
 		r = post('/users/authenticate', payload)
 		resp = r.json()
@@ -68,9 +66,8 @@ class CS5331Test(unittest.TestCase):
 		self.assertEqual(int(r.status_code), 200)
 		self.assertEqual(resp['status'], True)
 		self.assertRegexpMatches(resp['token'], '^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$')
-		token = resp['token']
 
-	def test_0501_auth_fail(self):
+	def test_0501auth_fail(self):
 		payload = {'username':USERNAME, 'password':'wrongpassword'}
 		r = post('/users/authenticate', payload)
 		resp = r.json()
@@ -80,8 +77,10 @@ class CS5331Test(unittest.TestCase):
 		# self.assertRegexpMatches(resp['token'], '^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$')
 
 	def test_0800_user_info(self):
-		r = post('/users', {'token':self.token})
+		token = auth()
+		r = post('/users', {'token':token})
 		resp = r.json()
+		print resp
 
 		self.assertEqual(int(r.status_code), 200)
 		self.assertEqual(resp['status'], True)
@@ -132,14 +131,16 @@ class CS5331Test(unittest.TestCase):
 	# 	self.assertEqual(resp['status'], True)
 
 	def test_1300_expire(self):
-		r = post('/users/expire', {'token':self.token})
+		token = auth()
+		r = post('/users/expire', {'token':token})
 		resp = r.json()
 
 		self.assertEqual(int(r.status_code), 200)
 		self.assertEqual(resp['status'], True)
 
 	def test_1300_expire_fail(self):
-		r = post('/users/expire', {'token':self.token})
+		token = auth()
+		r = post('/users/expire', {'token':token})
 		resp = r.json()
 
 		self.assertEqual(int(r.status_code), 200)
@@ -163,6 +164,20 @@ def get(uri, base=SCHEME_HOST):
 	print colored(r.text, 'red')
 
 	return r
+
+def auth():
+	payload = {'username':USERNAME, 'password':PASSWORD}
+	r = post('/users/authenticate', payload)
+	resp = r.json()
+
+		# self.assertEqual(int(r.status_code), 200)
+		# self.assertEqual(resp['status'], True)
+		# self.assertRegexpMatches(resp['token'], '^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$')
+	if r.status_code != 200 or not resp['status']:
+		return False
+
+	print 'token={}'.format(resp['token'])
+	return resp['token']
 
 
 
