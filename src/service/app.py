@@ -71,8 +71,9 @@ def token_required_uuid4(f):
             user = UserData.query.filter_by(id=token.id_user).first()
 
             return f(user.id, *args, **kwargs)
-        except:
+        except Exception as e:
             # can be 500?
+            print e
             return jsonify({'status':False, 'error':'Invalid authentication token.'})
 
         return jsonify({'status':False, 'error':'Invalid authentication token.'})
@@ -120,19 +121,21 @@ def meta_members():
 
 
 # User endpoints
-@app.route('/users', methods=['POST'])
 @token_required_uuid4
+@app.route('/users', methods=['POST'])
 def user_list():
+    payload = request.get_json()
+    token = payload['token']
 
-    users = UserData.query.all()
-    output = []
+    user_token = TokenData.query.filter_by(token=token).filter_by(valid=True).first()
+    user = UserData.query.filter_by(id=user_token.id_user).first()
+    user_info = {
+        'username':user.username,
+        'fullname':user.fullname,
+        'age':user.age
+    }
 
-    for user in users:
-        user_data = {}
-        user_data['username'] = user.username
-        output.append(user_data)
-
-    return jsonify({'result': output})
+    return jsonify({'status':True, 'result':user_info})
 
 
 @app.route('/users/register', methods=['POST'])
@@ -200,8 +203,8 @@ def diary_list():
     return jsonify({'status': True, 'result': output }), 200
 
 
-@app.route('/diary', methods=['POST'])
 @token_required_uuid4
+@app.route('/diary', methods=['POST'])
 def diary_list_by_user(id_user):
 
     diaries = DiaryData.query.filter_by(id_user=id_user).all()
@@ -222,8 +225,8 @@ def diary_list_by_user(id_user):
     return jsonify({'status': True, 'result': output}), 200
 
 
-@app.route('/diary/create', methods=['POST'])
 @token_required_uuid4
+@app.route('/diary/create', methods=['POST'])
 def diary_create():
 
     data = request.get_json()
@@ -236,8 +239,8 @@ def diary_create():
     return jsonify({'status': True, 'result': new_diary.id}), 201
 
 
-@app.route('/diary/delete/<diary_id>', methods=['POST'])
 @token_required_uuid4
+@app.route('/diary/delete/<diary_id>', methods=['POST'])
 def diary_delete(id_user, diary_id):
 
     diary = DiaryData.query.filter_by(id=diary_id, id_user=id_user).first()
@@ -251,8 +254,8 @@ def diary_delete(id_user, diary_id):
     return jsonify({'status': True}), 201
 
 
-@app.route('/diary/permission', methods=['POST'])
 @token_required_uuid4
+@app.route('/diary/permission', methods=['POST'])
 def diary_permission(id_user):
 
     data = request.get_json()
