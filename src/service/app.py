@@ -73,7 +73,7 @@ def token_required_uuid4(f):
             return f(user.id, *args, **kwargs)
         except Exception as e:
             # can be 500?
-            print e
+            print(e)
             return jsonify({'status':False, 'error':'Invalid authentication token.'})
 
         return jsonify({'status':False, 'error':'Invalid authentication token.'})
@@ -121,14 +121,20 @@ def meta_members():
 
 
 # User endpoints
+
+def get_user_by_token(token):
+    user_token = TokenData.query.filter_by(token=token).filter_by(valid=True).first()
+    user = UserData.query.filter_by(id=user_token.id_user).first()
+    return user
+
 @token_required_uuid4
 @app.route('/users', methods=['POST'])
 def user_list():
     payload = request.get_json()
     token = payload['token']
 
-    user_token = TokenData.query.filter_by(token=token).filter_by(valid=True).first()
-    user = UserData.query.filter_by(id=user_token.id_user).first()
+    user = get_user_by_token(token)
+
     user_info = {
         'username':user.username,
         'fullname':user.fullname,
@@ -224,72 +230,99 @@ def diary_list():
 
 @token_required_uuid4
 @app.route('/diary', methods=['POST'])
-def diary_list_by_user(id_user):
+def diary_list_by_user():
 
-    diaries = DiaryData.query.filter_by(id_user=id_user).all()
-    output = []
+    try:
+        payload = request.get_json()
+        token = payload['token']
 
-    for diary in diaries:
-        diary_data = {}
-        diary_data['id'] = diary.id
-        diary_data['title'] = diary.title
-        user_data = UserData.query.filter_by(id=diary.id_user).first()
-        diary_data['author'] = user_data.fullname
-        diary_data['publish_date'] = diary.publish_date
-        diary_data['public'] = diary.public
-        diary_data['text'] = diary.text
+        user = get_user_by_token(token)
+        diaries = DiaryData.query.filter_by(id_user=user.id).all()
+        output = []
 
-        output.append(diary_data)
+        for diary in diaries:
+            diary_data = {}
+            diary_data['id'] = diary.id
+            diary_data['title'] = diary.title
+            user_data = UserData.query.filter_by(id=diary.id_user).first()
+            diary_data['author'] = user_data.fullname
+            diary_data['publish_date'] = diary.publish_date
+            diary_data['public'] = diary.public
+            diary_data['text'] = diary.text
 
-    return jsonify({'status': True, 'result': output}), 200
+            output.append(diary_data)
+
+        return jsonify({'status': True, 'result': output}), 200
+
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
+
 
 
 @token_required_uuid4
 @app.route('/diary/create', methods=['POST'])
 def diary_create():
+    try:
+        data = request.get_json()
 
-    data = request.get_json()
+        token = data['token']
+        user = get_user_by_token(token)
 
-    new_diary = DiaryData(title=data['title'], publish_date=str(datetime.datetime.now()),
-                          public=data['public'], text=data['text'], id_user=id_user)
-    db.session.add(new_diary)
-    db.session.commit()
+        new_diary = DiaryData(title=data['title'], publish_date=str(datetime.datetime.now()),
+                              public=data['public'], text=data['text'], id_user=user.id)
+        db.session.add(new_diary)
+        db.session.commit()
 
-    return jsonify({'status': True, 'result': new_diary.id}), 201
+        return jsonify({'status': True, 'result': new_diary.id}), 201
 
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
 
 @token_required_uuid4
-@app.route('/diary/delete/<diary_id>', methods=['POST'])
-def diary_delete(id_user, diary_id):
+@app.route('/diary/delete', methods=['POST'])
+def diary_delete():
+    try:
+        data = request.get_json()
 
-    diary = DiaryData.query.filter_by(id=diary_id, id_user=id_user).first()
+        token = data['token']
+        user = get_user_by_token(token)
 
-    if not diary:
-        return jsonify({'message': 'No diary found!'}), 200
+        diary = DiaryData.query.filter_by(id=data['id'], id_user=user.id).first()
 
-    db.session.delete(diary)
-    db.session.commit()
+        if not diary:
+            return jsonify({'status': True, 'resutl': data['id'], 'error': 'No diary found!'}), 200
 
-    return jsonify({'status': True}), 201
+        db.session.delete(diary)
+        db.session.commit()
 
+        return jsonify({'status': True}), 200
+
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
 
 @token_required_uuid4
 @app.route('/diary/permission', methods=['POST'])
-def diary_permission(id_user):
+def diary_permission():
+    try:
 
-    data = request.get_json()
+        data = request.get_json()
 
-    diary = DiaryData.query.filter_by(id=data['id'], id_user=id_user).first()
+        token = data['token']
+        user = get_user_by_token(token)
 
-    if not diary:
-        return jsonify({'status': False}), 200
+        diary = DiaryData.query.filter_by(id=data['id'], id_user=user.id).first()
 
-    diary.public = data['public']
+        if not diary:
+            return jsonify({'status': False}), 200
 
-    db.session.commit()
+        diary.public = data['public']
 
-    return jsonify({'status': True}), 201
+        db.session.commit()
 
+        return jsonify({'status': True}), 200
+
+    except Exception as e:
+        return jsonify({'status': False, 'error': str(e)})
 
 if __name__ == '__main__':
     # Change the working directory to the script directory
