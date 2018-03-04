@@ -164,7 +164,7 @@ var MyDiary = function() {
     };
 }();
 
-///////////////////////////// update
+///////////////////////////// update    
 
 function submitDataUpdate(diaryId,isPrivate)
 {			 
