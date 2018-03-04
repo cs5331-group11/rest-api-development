@@ -42,13 +42,17 @@ function processResponseInit(vv)
 
 function appndData(id,title,author,publishdate,text,ispublic)
 {
-	
+	var ischeckedhtml="";
+	if(ispublic)
+	{
+		ischeckedhtml=" checked=\"\"";
+	}
 var tr = "<tr>"+
 "<td class=\"text-center\">"+id+"</td>"+
 											"<td class=\"text-center\">"+title+"</td>"+
                                             "<td><strong>"+author+"</strong></td>"+
                                             "<td>"+publishdate+"</td>"+
-                                            "<td><label class=\"switch switch-success\"><input class=\"chkIsPublic\" type=\"checkbox\" checked=\"\"><span></span></label></td>"+
+                                            "<td><label class=\"switch switch-success\"><input class=\"chkIsPublic\" type=\"checkbox\" "+ischeckedhtml+"><span></span></label></td>"+
 											"<td>"+text+"</td>"+
                                             "<td class=\"text-center\">"+
                                                 " <a href=\"javascript:void(0)\" data-toggle=\"tooltip\" title=\"Delete\" class=\"btn btn-effect-ripple btn-xs btn-danger delDiaryBtn\"><i class=\"fa fa-times\"></i></a>"+
