@@ -8,7 +8,7 @@ var userExpirePostUrl = serverUrl+'/users/expire';
 var CreateDiaryPostUrl = serverUrl+'/diary/create';
 var deleteDiaryPostUrl = serverUrl+'/diary/delete';
 var updatePermissionDiaryPostUrl = serverUrl+'/diary/permission';
-var updatePermissionDiaryPostUrl = serverUrl+'/meta/members';
+var membersGetUrl = serverUrl+'/meta/members';
  
 
 var testing=false; /* for testing purpose  */

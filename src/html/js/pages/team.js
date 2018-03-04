@@ -12,7 +12,7 @@ $(function () {
 						
 function submitData()
 {	$("#teamul").empty();
-    getRequest(updatePermissionDiaryPostUrl,processResponse);
+    getRequest(membersGetUrl,processResponse);
          
 }
 function processResponse(data)
