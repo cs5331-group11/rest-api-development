@@ -1,7 +1,6 @@
 # rest-api-development
 
 CS5331 Assignment 1 Project Reference Repository
-
 ## Instructions
 
 Your objective is to implement a web application that provides the endpoints
@@ -53,7 +52,6 @@ sudo ./run.sh
 (Docker CE installation instructions are from this
 [link](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository).)
 
-**Please consult your assignment hand-out for detailed setup information.**
 
 ## Grading
 
@@ -81,13 +79,8 @@ curl http://localhost:8080
 
 If a response is received, you're good to go.
 
-**Please replace the details below with information relevant to your team.**
 
 ## Screenshots
-
-Please replace the example screenshots with screenshots of your completed
-project. Feel free to include more than one.
-
 ### UI Input Validation
 ![](./img/Registration_MinimumCharacterValidation.JPG)
 
@@ -110,9 +103,6 @@ project. Feel free to include more than one.
 ![](./img/CreateNew.JPG)
 
 ## Administration and Evaluation
-
-Please fill out this section with details relevant to your team.
-
 ### Team Members
 
 1. Caroline Astolfi
