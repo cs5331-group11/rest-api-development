@@ -77,10 +77,8 @@ class CS5331Test(unittest.TestCase):
 		# self.assertRegexpMatches(resp['token'], '^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$')
 
 	def test_0800_user_info(self):
-		token = auth()
-		r = post('/users', {'token':token})
+		r = post('/users', {'token':auth()})
 		resp = r.json()
-		print resp
 
 		self.assertEqual(int(r.status_code), 200)
 		self.assertEqual(resp['status'], True)
@@ -88,47 +86,64 @@ class CS5331Test(unittest.TestCase):
 		self.assertEqual(resp['result']['fullname'], NEW_USER['fullname'])
 		self.assertEqual(resp['result']['age'], NEW_USER['age'])
 
-	# def test_0900_diary_get_public_diary(self):
-	# 	r = get('/')
-	# 	resp = r.json()
+	def test_0900_diary_add_public_diary(self):
+		payload = {'token':auth(),
+			'title': 'title {}'.format(binascii.hexlify(os.urandom(10))),
+			'public': True,
+			'text': 'this is a text - {}'.format(binascii.hexlify(os.urandom(10)))}
+		r = post('/diary/create', payload)
+		resp = r.json()
+		print resp
 
-	# 	self.assertEqual(int(r.status_code), 200)
-	# 	self.assertEqual(resp['status'], True)
+		self.assertEqual(int(r.status_code), 201)
+		self.assertEqual(resp['status'], True)
+		self.assertGreaterEqual(int(resp['result']['id']), 0)
 
-	# def test_1000_diary_post_public_diary(self):
-	# 	r = get('/')
-	# 	resp = r.json()
 
-	# 	self.assertEqual(int(r.status_code), 200)
-	# 	self.assertEqual(resp['status'], True)
+	def test_0901_diary_add_private_diary(self):
+		payload = {'token':auth(),
+			'title': 'title {}'.format(binascii.hexlify(os.urandom(10))),
+			'public': False,
+			'text': 'this is a text - {}'.format(binascii.hexlify(os.urandom(10)))}
+		r = post('/diary/create', payload)
+		resp = r.json()
 
-	# def test_1001_diary_post_private_diary(self):
-	# 	r = get('/')
-	# 	resp = r.json()
+		self.assertEqual(int(r.status_code), 201)
+		self.assertEqual(resp['status'], True)
+		self.assertGreaterEqual(int(resp['result']['id']), 0)
 
-	# 	self.assertEqual(int(r.status_code), 200)
-	# 	self.assertEqual(resp['status'], True)
+	def test_1001_diary_get_all_public(self):
+		r = get('/diary')
+		resp = r.json()
 
-	# def test_1100_diary_delete(self):
-	# 	r = get('/')
-	# 	resp = r.json()
+		self.assertEqual(int(r.status_code), 200)
+		self.assertEqual(resp['status'], True)
+		self.assertGreaterEqual(len(resp['result']), 1)
 
-	# 	self.assertEqual(int(r.status_code), 200)
-	# 	self.assertEqual(resp['status'], True)
+	def test_1002_diary_get_by_user(self):
+		r = post('/diary', {'token':auth()})
+		resp = r.json()
 
-	# def test_1200_diary_private_to_public(self):
-	# 	r = get('/')
-	# 	resp = r.json()
+		self.assertEqual(int(r.status_code), 200)
+		self.assertEqual(resp['status'], True)
+		self.assertGreaterEqual(len(resp['result']), 1)
 
-	# 	self.assertEqual(int(r.status_code), 200)
-	# 	self.assertEqual(resp['status'], True)
+	def test_1101_diary_delete_existing(self):
+		token = auth()
+		r = post('/diary', {'token':token})
+		resp = r.json()
 
-	# def test_1201_diary_public_to_p2rivate(self):
-	# 	r = get('/')
-	# 	resp = r.json()
+		self.assertEqual(int(r.status_code), 200)
+		self.assertEqual(resp['status'], True)
+		self.assertGreaterEqual(len(resp['result']), 1)
 
-	# 	self.assertEqual(int(r.status_code), 200)
-	# 	self.assertEqual(resp['status'], True)
+		diaries = resp['result']
+
+		r = post('/diary/delete', {'token':token, 'id': diaries[0]['id']})
+		resp = r.json()
+
+		self.assertEqual(int(r.status_code), 200)
+		self.assertEqual(resp['status'], True)
 
 	def test_1300_expire(self):
 		token = auth()
@@ -150,7 +165,10 @@ class CS5331Test(unittest.TestCase):
 def post(uri, payload=None, base=SCHEME_HOST):
 	url = '{}{}'.format(base, uri)
 	r = requests.post(url, json=payload)
+	print colored('path: {}'.format(uri), 'red')
 	print colored('status: {}'.format(r.status_code), 'green')
+	print colored('request_body:', 'green')
+	print colored(payload, 'red')
 	print colored('response_body:', 'green')
 	print colored(r.text, 'red')
 
@@ -159,6 +177,7 @@ def post(uri, payload=None, base=SCHEME_HOST):
 def get(uri, base=SCHEME_HOST):
 	url = '{}{}'.format(base, uri)
 	r = requests.get(url)
+	print colored('path: {}'.format(uri), 'red')
 	print colored('status: {}'.format(r.status_code), 'green')
 	print colored('response_body:', 'green')
 	print colored(r.text, 'red')
@@ -176,8 +195,8 @@ def auth():
 	if r.status_code != 200 or not resp['status']:
 		return False
 
-	print 'token={}'.format(resp['token'])
 	CURRENT_TOKEN = resp['token']
+	print 'token={}'.format(CURRENT_TOKEN)
 	return resp['token']
 
 
