@@ -133,8 +133,8 @@ If a response is received, you're good to go.
 - Window sessionStorage is used to store the token once user is logged-in. Access to the token value is restricted to the same scheme + hostname + port.
 - Token is cleared when the browser closes or user logs-out
 - To restrict XSS attacks in client side
-  - JSON.stringify() is used for the JS object serialization(encode data) 
-  - JSON.parse() is used for the deserialization 
+  - `JSON.stringify()` is used for the JS object serialization(encode data) 
+  - `JSON.parse()` is used for the deserialization 
 - Only external Javascripts are used as opposed to inline or scripts on the same page
 - To restrict SQL injection attacks, all queries are executed using SQLAlchemy ORM, which by default quotes special characters – semicolons or apostrophes and more advanced restrictions.
 - Serve API on the same port(tcp/80 in this case) as the static files to simplify CORS configs
@@ -157,9 +157,9 @@ If a response is received, you're good to go.
 #### Question 4: Are there any additional features you would like to highlight?
 
 - Make it more REST-ful (and easier to debug on the webserver’s access/error logs)
-  - Response codes: 5xx response code for errors, 403 for auth failures
-  - PUT for new diary entries, POST/UPDATE for updates, DELETE for deletes
-  - /diary/<id> for accessing diaries (update/delete/get)
+  - Response codes: `5xx` response code for errors, `403` for auth failures
+  - `PUT` for new diary entries, `POST`/`UPDATE` for updates, `DELETE` for deletes
+  - `/diary/<id>` for accessing diaries (update/delete/get)
 
 #### Question 5: Is your web application vulnerable? If yes, how and why? If not, what measures did you take to secure it?
 
