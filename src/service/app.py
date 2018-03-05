@@ -273,7 +273,7 @@ def diary_create():
         db.session.add(new_diary)
         db.session.commit()
 
-        return jsonify({'status': True, 'result': new_diary.id}), 201
+        return jsonify({'status': True, 'result': {'id': new_diary.id}}), 201
 
     except Exception as e:
         return jsonify({'status': False, 'error': str(e)})
